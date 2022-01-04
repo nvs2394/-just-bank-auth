@@ -1,0 +1,19 @@
+### Login invalid credential
+
+POST http://localhost:8001/login  HTTP/1.1
+content-type: application/json
+
+{
+    "username": "nvs2394",
+    "password": "1@345678"
+}
+
+### Login with correct usename/password
+
+POST http://localhost:8001/login  HTTP/1.1
+content-type: application/json
+
+{
+    "username": "2000",
+    "password": "abc123"
+}

@@ -7,8 +7,11 @@ import (
 	"os"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"github.com/nvs2394/just-bank-auth/domain"
+	"github.com/nvs2394/just-bank-auth/service"
 )
 
 func sanityCheck() {
@@ -42,6 +45,16 @@ func Start() {
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
+
+	dbClient := getDBClient()
+
+	authRepositoryDB := domain.NewAuthRepositoryDb(dbClient)
+
+	authHandlers := AuthHandlers{
+		service: service.NewAuthService(authRepositoryDB, domain.GetRolePermissions()),
+	}
+
+	router.HandleFunc("/login", authHandlers.login).Methods(http.MethodPost)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router))
 
