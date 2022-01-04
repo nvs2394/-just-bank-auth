@@ -6,3 +6,7 @@
 
 
 ![HLD](./high-level-design.png)
+
+### Authentication flow
+
+![HLD](./authen-flow.png)
