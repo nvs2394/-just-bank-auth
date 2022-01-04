@@ -16,3 +16,7 @@ type AccessTokenClaims struct {
 	Role       string   `json:"role"`
 	jwt.StandardClaims
 }
+
+func (claims AccessTokenClaims) IsUserRole() bool {
+	return claims.Role == "user"
+}

@@ -12,3 +12,14 @@ func WriteResponse(response http.ResponseWriter, code int, data interface{}) {
 		panic(err)
 	}
 }
+
+func NotAuthorizedResponse(msg string) map[string]interface{} {
+	return map[string]interface{}{
+		"isAuthorized": false,
+		"message":      msg,
+	}
+}
+
+func AuthorizedResponse() map[string]bool {
+	return map[string]bool{"isAuthorized": true}
+}

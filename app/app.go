@@ -54,7 +54,8 @@ func Start() {
 		service: service.NewAuthService(authRepositoryDB, domain.GetRolePermissions()),
 	}
 
-	router.HandleFunc("/login", authHandlers.login).Methods(http.MethodPost)
+	router.HandleFunc("/login", authHandlers.Login).Methods(http.MethodPost)
+	router.HandleFunc("/verify", authHandlers.Verify).Methods(http.MethodGet)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router))
 
