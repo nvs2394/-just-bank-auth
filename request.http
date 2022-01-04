@@ -17,3 +17,13 @@ content-type: application/json
     "username": "2000",
     "password": "abc123"
 }
+
+### Login with Admin account
+
+POST http://localhost:8001/login  HTTP/1.1
+content-type: application/json
+
+{
+    "username": "admin",
+    "password": "abc123"
+}
