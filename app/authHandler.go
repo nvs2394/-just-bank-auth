@@ -6,8 +6,8 @@ import (
 
 	"github.com/nvs2394/just-bank-auth/common"
 	"github.com/nvs2394/just-bank-auth/dto"
-	"github.com/nvs2394/just-bank-auth/logger"
 	"github.com/nvs2394/just-bank-auth/service"
+	"github.com/nvs2394/just-bank-lib/logger"
 )
 
 type AuthHandlers struct {

@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/nvs2394/just-bank-auth/app"
-	"github.com/nvs2394/just-bank-auth/logger"
+	"github.com/nvs2394/just-bank-lib/logger"
 )
 
 func main() {
