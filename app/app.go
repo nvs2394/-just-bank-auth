@@ -39,6 +39,10 @@ func Start() {
 	router.POST("/login", authHandlers.Login)
 	router.GET("/verify", authHandlers.Verify)
 
-	http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router)
+
+	if err != nil {
+		log.Fatal("Can not start server")
+	}
 
 }
