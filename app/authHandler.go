@@ -1,9 +1,9 @@
 package app
 
 import (
-	"encoding/json"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/nvs2394/just-bank-auth/common"
 	"github.com/nvs2394/just-bank-auth/dto"
 	"github.com/nvs2394/just-bank-auth/service"
@@ -14,22 +14,21 @@ type AuthHandlers struct {
 	service service.AuthService
 }
 
-func (authHandler *AuthHandlers) Login(response http.ResponseWriter, r *http.Request) {
+func (authHandler *AuthHandlers) Login(context *gin.Context) {
 	var loginRequest dto.LoginRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&loginRequest); err != nil {
+	if err := context.BindJSON(&loginRequest); err != nil {
 		logger.Error("Error while decoding login request" + err.Error())
-		common.WriteResponse(response, http.StatusBadRequest, nil)
+		context.JSON(http.StatusBadRequest, nil)
 	} else {
 		loginResponse, err := authHandler.service.Login(loginRequest)
 
 		if err != nil {
-			common.WriteResponse(response, http.StatusUnauthorized, err.AsMessage())
+			context.JSON(http.StatusUnauthorized, err.AsMessage())
 		} else {
-			common.WriteResponse(response, http.StatusOK, loginResponse)
+			context.JSON(http.StatusOK, loginResponse)
 		}
 	}
-
 }
 
 /*
@@ -37,22 +36,24 @@ func (authHandler *AuthHandlers) Login(response http.ResponseWriter, r *http.Req
  http://localhost:8181/auth/verify?token=somevalidtokenstring&routeName=GetCustomer&customer_id=2000&account_id=95470
 */
 
-func (authHandler *AuthHandlers) Verify(response http.ResponseWriter, r *http.Request) {
+func (authHandler *AuthHandlers) Verify(context *gin.Context) {
 	urlParams := make(map[string]string)
 
-	for key := range r.URL.Query() {
-		urlParams[key] = r.URL.Query().Get(key)
+	queries := []string{"token", "routeName", "customer_id", "account_id"}
+
+	for _, key := range queries {
+		urlParams[key] = context.Query(key)
 	}
 
 	if urlParams["token"] != "" {
 		err := authHandler.service.Verify(urlParams)
 		if err != nil {
-			common.WriteResponse(response, err.Code, common.NotAuthorizedResponse(err.Message))
+			context.JSON(err.Code, common.NotAuthorizedResponse(err.Message))
 		} else {
-			common.WriteResponse(response, http.StatusOK, common.AuthorizedResponse())
+			context.JSON(http.StatusOK, common.AuthorizedResponse())
 		}
 
 	} else {
-		common.WriteResponse(response, http.StatusForbidden, common.NotAuthorizedResponse("missing token"))
+		context.JSON(http.StatusForbidden, common.NotAuthorizedResponse("Missing token"))
 	}
 }

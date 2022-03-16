@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"github.com/nvs2394/just-bank-auth/domain"
 	"github.com/nvs2394/just-bank-auth/service"
@@ -41,7 +41,6 @@ func getDBClient() *sqlx.DB {
 func Start() {
 
 	sanityCheck()
-	router := mux.NewRouter()
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
@@ -54,9 +53,11 @@ func Start() {
 		service: service.NewAuthService(authRepositoryDB, domain.GetRolePermissions()),
 	}
 
-	router.HandleFunc("/login", authHandlers.Login).Methods(http.MethodPost)
-	router.HandleFunc("/verify", authHandlers.Verify).Methods(http.MethodGet)
+	router := gin.Default()
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router))
+	router.POST("/login", authHandlers.Login)
+	router.GET("/verify", authHandlers.Verify)
+
+	http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router)
 
 }
