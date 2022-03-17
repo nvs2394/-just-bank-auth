@@ -5,11 +5,10 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/mux"
-	"github.com/jmoiron/sqlx"
+	"github.com/nvs2394/just-bank-auth/common"
 	"github.com/nvs2394/just-bank-auth/domain"
 	"github.com/nvs2394/just-bank-auth/service"
 )
@@ -20,33 +19,14 @@ func sanityCheck() {
 	}
 }
 
-func getDBClient() *sqlx.DB {
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	connectionString := dbUser + ":" + dbPassword + "@/" + dbName
-
-	client, err := sqlx.Open("mysql", connectionString)
-
-	if err != nil {
-		panic(err)
-	}
-
-	client.SetConnMaxLifetime(time.Minute * 3)
-	client.SetMaxOpenConns(10)
-	client.SetMaxIdleConns(10)
-	return client
-}
-
 func Start() {
 
 	sanityCheck()
-	router := mux.NewRouter()
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
 
-	dbClient := getDBClient()
+	dbClient := common.GetDBClient()
 
 	authRepositoryDB := domain.NewAuthRepositoryDb(dbClient)
 
@@ -54,9 +34,15 @@ func Start() {
 		service: service.NewAuthService(authRepositoryDB, domain.GetRolePermissions()),
 	}
 
-	router.HandleFunc("/login", authHandlers.Login).Methods(http.MethodPost)
-	router.HandleFunc("/verify", authHandlers.Verify).Methods(http.MethodGet)
+	router := gin.Default()
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router))
+	router.POST("/login", authHandlers.Login)
+	router.GET("/verify", authHandlers.Verify)
+
+	err := http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router)
+
+	if err != nil {
+		log.Fatal("Can not start server")
+	}
 
 }
