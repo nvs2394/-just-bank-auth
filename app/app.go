@@ -36,8 +36,10 @@ func Start() {
 
 	router := gin.Default()
 
-	router.POST("/login", authHandlers.Login)
-	router.GET("/verify", authHandlers.Verify)
+	v1 := router.Group("/v1")
+
+	v1.POST("/login", authHandlers.Login)
+	v1.GET("/verify", authHandlers.Verify)
 
 	err := http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router)
 
