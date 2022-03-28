@@ -1,38 +1,29 @@
 package domain
 
 import (
-	"database/sql"
-
-	"github.com/jmoiron/sqlx"
+	"github.com/nvs2394/just-bank-auth/models"
 	"github.com/nvs2394/just-bank-lib/errs"
 	"github.com/nvs2394/just-bank-lib/logger"
+	"gorm.io/gorm"
 )
 
 type AuthRepositoryDb struct {
-	client *sqlx.DB
+	client *gorm.DB
 }
 
 func (authRepo AuthRepositoryDb) FindBy(username string, password string) (*Login, *errs.AppError) {
 	var login Login
-	sqlVerify := `SELECT username, u.customer_id, role, group_concat(a.account_id) as account_numbers FROM users u
-	LEFT JOIN accounts a ON a.customer_id = u.customer_id
-  WHERE username = ? and password = ?
-  GROUP BY a.customer_id`
 
-	err := authRepo.client.Get(&login, sqlVerify, username, password)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errs.NewUnauthorizedError("Invalid credential")
-		}
-
-		logger.Error("Error when verifying login request from database" + err.Error())
+	result := authRepo.client.Unscoped().Model(&models.User{}).Select("users.username as UserName, users.customer_id as CustomerId, users.role as Role, group_concat(accounts.account_id) as Accounts").Joins("LEFT JOIN accounts ON accounts.customer_id = users.customer_id").Where(models.User{UserName: username, Password: password}).Group("users.customer_id").Scan(&login)
+	if result.Error != nil {
+		logger.Error("Error when verifying login request from database" + result.Error.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 
 	return &login, nil
 }
 
-func NewAuthRepositoryDb(dbClient *sqlx.DB) AuthRepositoryDb {
+func NewAuthRepositoryDb(dbClient *gorm.DB) AuthRepositoryDb {
 	return AuthRepositoryDb{
 		dbClient,
 	}

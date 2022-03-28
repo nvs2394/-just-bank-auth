@@ -1,6 +1,6 @@
 ### Login invalid credential
 
-POST http://localhost:8001/login  HTTP/1.1
+POST http://localhost:8001/v1/login  HTTP/1.1
 content-type: application/json
 
 {
@@ -10,7 +10,7 @@ content-type: application/json
 
 ### Login with correct usename/password
 
-POST http://localhost:8001/login  HTTP/1.1
+POST http://localhost:8001/v1/login  HTTP/1.1
 content-type: application/json
 
 {
@@ -20,7 +20,7 @@ content-type: application/json
 
 ### Login with Admin account
 
-POST http://localhost:8001/login  HTTP/1.1
+POST http://localhost:8001/v1/login  HTTP/1.1
 content-type: application/json
 
 {
@@ -30,4 +30,4 @@ content-type: application/json
 
 ### Verify token
 
-GET http://localhost:8001/verify?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcl9pZCI6IjIwMDAiLCJhY2NvdW50cyI6WyI5NTQ3MSIsIjk1NDcyIl0sInVzZXJuYW1lIjoiMjAwMCIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNjQxMjk0Mjk5fQ.T9ejVcI8aViV8Qn3N4aGmo4q7-t_i_5nCPwrk1ln1DM&routeName=GetCustomer&customer_id=2000&account_id=95470
+GET http://localhost:8001/v1/verify?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcl9pZCI6IjIwMDAiLCJhY2NvdW50cyI6WyI5NTQ3MSIsIjk1NDcyIl0sInVzZXJuYW1lIjoiMjAwMCIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNjQxMjk0Mjk5fQ.T9ejVcI8aViV8Qn3N4aGmo4q7-t_i_5nCPwrk1ln1DM&routeName=GetCustomer&customer_id=2000&account_id=95470

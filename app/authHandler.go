@@ -17,9 +17,9 @@ type AuthHandlers struct {
 func (authHandler *AuthHandlers) Login(context *gin.Context) {
 	var loginRequest dto.LoginRequest
 
-	if err := context.BindJSON(&loginRequest); err != nil {
+	if err := context.ShouldBindJSON(&loginRequest); err != nil {
 		logger.Error("Error while decoding login request" + err.Error())
-		context.JSON(http.StatusBadRequest, nil)
+		context.JSON(http.StatusBadRequest, err.Error())
 	} else {
 		loginResponse, err := authHandler.service.Login(loginRequest)
 
