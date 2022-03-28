@@ -8,6 +8,17 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+/*
+{
+  "customer_id": "2000",
+  "accounts": [
+    "95470"
+  ],
+  "username": "2000",
+  "role": "user",
+  "exp": 1648026723
+}
+*/
 type Login struct {
 	UserName   string         `db:"username"`
 	CustomerId sql.NullString `db:"customer_id"`
