@@ -1,4 +1,4 @@
-name: Lint Go Code
+name: just-bank-auth
 
 on:
   push:
