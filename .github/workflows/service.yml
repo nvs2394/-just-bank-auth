@@ -1,4 +1,4 @@
-name: Lint Go Code
+name: just-bank-auth
 
 on:
   push:
@@ -23,10 +23,22 @@ jobs:
         run: |
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
 
-          golangci-lint run 
+          golangci-lint run
+  sonarcloud:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Build
-        run: go build -v ./...
+      # - name: Build
+      #   run: go build -v ./...
 
-      - name: Test
-        run: go test -v ./...
+      # - name: Test
+      #   run: go test -v ./...
