@@ -24,13 +24,43 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
 
           golangci-lint run
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          stable: 'false'
+          go-version: '1.17.0'
+      - name: Test
+        run: go test ./... -coverprofile=coverage.out -v -covermode=count
+      
+      - name: Convert coverage.out to coverage.lcov
+        uses: jandelgado/gcov2lcov-action@v1.0.6
+
+      - name: Report code coverage
+        uses: zgosalvez/github-actions-report-lcov@v1
+        with:
+          coverage-files: coverage.lcov
+          minimum-coverage: 5
+          artifact-name: code-coverage-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: .
+
   sonarcloud:
     runs-on: ubuntu-18.04
+    needs: [lint, test]
     steps:
       - uses: actions/checkout@v2
         with:
           # Disabling shallow clone is recommended for improving relevancy of reporting
           fetch-depth: 0
+      - uses: actions/setup-go@v2
+        with:
+          stable: 'false'
+          go-version: '1.17.0'
+      - name: Test
+        run: go test ./... -coverprofile=coverage.out -v -covermode=count
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
@@ -39,6 +69,3 @@ jobs:
 
       # - name: Build
       #   run: go build -v ./...
-
-      # - name: Test
-      #   run: go test -v ./...
