@@ -19,3 +19,14 @@ func TestNotAuthorizedResponse(t *testing.T) {
 		t.Error("result should be false, got", result["isAuthorized"])
 	}
 }
+
+func TestAuthorizedResponse(t *testing.T) {
+	result := AuthorizedResponse()
+	var expected = map[string]interface{}{
+		"isAuthorized": true,
+	}
+
+	if result["isAuthorized"] != expected["isAuthorized"] {
+		t.Error("result should be true, got", result["isAuthorized"])
+	}
+}
